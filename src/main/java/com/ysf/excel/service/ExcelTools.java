@@ -166,6 +166,7 @@ public class ExcelTools {
         sql = sql.replace("#{fields}",fieldsStr);
         sql = sql.replace("#{values}",afterRegex);
 
+        System.out.println(sql);
         //
 
     }

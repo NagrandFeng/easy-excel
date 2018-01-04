@@ -11,7 +11,7 @@ import java.util.regex.Pattern;
  */
 public class ExcelToolsTest {
 
-    final static String filePath = "/Users/nagrandyf/Documents/work_in_zbj/jiaoyi/php事件转java/外部mq列表.xlsx";
+    final static String filePath = "/Users/nagrandyf/Documents/work_in_zbj/jiaoyi/php事件转java/test1.xlsx";
     static ExcelTools excelTools = new ExcelTools();
 
     public static void main(String[] args) {
@@ -33,8 +33,6 @@ public class ExcelToolsTest {
         TableDTO tableDTO = new TableDTO();
         tableDTO.setFilePath(filePath);
         tableDTO.setTableName("mk_trade_mq");
-        tableDTO.setPrimaryKeyName("user_id");
-        tableDTO.setPrimaryKeyValue("123");
 
         ExcelTools tools = new ExcelTools();
         tools.generateInsertSQL(tableDTO);
