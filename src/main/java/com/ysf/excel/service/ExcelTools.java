@@ -2,8 +2,6 @@ package com.ysf.excel.service;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
-import com.ysf.excel.entity.TableDTO;
-import com.ysf.excel.utils.SqlConstant;
 import java.io.BufferedInputStream;
 import java.io.File;
 import java.io.FileInputStream;
@@ -18,14 +16,12 @@ import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
 /**
  * @author Yeshufeng
- * @title excel生成sql
- * @date 2017/11/30
+ * @title 读Excel 得到map映射表
+ * @date 2016/11/30
  */
-public class ExcelTools {
+public abstract class ExcelTools {
 
-    public void generateInsertSQL(TableDTO tableDTO) {
-
-        String filePath = tableDTO.getFilePath();
+    public void dealExcel(String filePath) {
 
         File file = new File(filePath);
         //读excel
@@ -33,16 +29,17 @@ public class ExcelTools {
             FileInputStream fis = new FileInputStream(file);
             BufferedInputStream bis = new BufferedInputStream(fis);
             Workbook workBook = new XSSFWorkbook(bis);
-            readSheet(workBook,tableDTO);
+            dealSheet(workBook);
         } catch (Exception e) {
             e.printStackTrace();
         }
-
-        //生成sql-可能带点IO的操作了
-
     }
 
-    private void readSheet(Workbook workbook,TableDTO tableDTO){
+    /**
+     * 处理每一行
+     * @param workbook
+     */
+    private void dealSheet(Workbook workbook){
 
         Integer sheetIndex = workbook.getNumberOfSheets();
 
@@ -52,23 +49,22 @@ public class ExcelTools {
             int rowNumbers = sheet.getPhysicalNumberOfRows();
             Row firstRow = sheet.getRow(0);
 
+            //标题分开读
             Map<Integer,String> titleMap = readeFirstRow(firstRow);
 
             List<Map<String,Object>> objectList = Lists.newArrayList();
 
-            for (int j = 0; j < rowNumbers; j++) {
+            //excel具体内容
+            for (int j = 1; j < rowNumbers; j++) {
                 Row row = sheet.getRow(j);
                 Map<String,Object> rowObject = readOneRow(row,titleMap);
                 objectList.add(rowObject);
             }
 
-            //每个sheet的打印操作
-            mapList2SqlList(objectList,tableDTO);
-
+            dealWith(objectList);
         }
-
-
     }
+
 
     private Map<Integer,String> readeFirstRow(Row firstRow ){
         Map<Integer,String> params = Maps.newHashMap();
@@ -110,7 +106,11 @@ public class ExcelTools {
                 cellValue=value.intValue();
                 break;
             case HSSFCell.CELL_TYPE_STRING: // 字符串
-                cellValue = "\""+cell.getStringCellValue()+"\"";
+                String result = cell.getStringCellValue();
+                result = result.replaceAll(" ","");//空格去掉
+                result = result.replaceAll("\"","");//引号去掉
+                result = result.replaceAll("\'","");//引号去掉
+                cellValue = result;
                 break;
             case HSSFCell.CELL_TYPE_BOOLEAN: // Boolean
                 cellValue = cell.getBooleanCellValue();
@@ -131,50 +131,9 @@ public class ExcelTools {
         return cellValue;
     }
 
-    private void mapList2SqlList(List<Map<String,Object>> objectList,TableDTO tableDTO){
-        String sql = SqlConstant.INSERT.replace("#{table}",tableDTO.getTableName());
-
-        StringBuilder fields = new StringBuilder("");
-        StringBuilder values = new StringBuilder("");
-        for (int i = 0; i < objectList.size(); i++) {
-            Map<String,Object> sqlObject = objectList.get(i);
-            if(i>0){
-                values.append("(");
-            }
-            for (Map.Entry<String,Object> entry: sqlObject.entrySet()) {
-                if(i == 0){
-                    //因为第一行是title
-                    String fieldName = entry.getKey();
-                    fields.append(fieldName);
-                    fields.append(",");
-                }else{
-                    Object fieldValue = entry.getValue();
-                    values.append(fieldValue);
-                    values.append(",");
-                }
-
-            }
-            if(i>0){
-                values.append("),");
-            }
-        }
-        //括号前面的逗号去掉
-        String regex = "[\\,\\)]{2}";
-        String afterRegex = values.toString().replaceAll(regex,")");
-        afterRegex = afterRegex.substring(0,afterRegex.length()-1);
-        String fieldsStr = fields.toString().substring(0,fields.length()-1);
-        sql = sql.replace("#{fields}",fieldsStr);
-        sql = sql.replace("#{values}",afterRegex);
-
-        System.out.println(sql);
-        //
-
-    }
-
-
-
-
-    public void generateUpdateSQL(String filePath){
-
-    }
+    /**
+     * dealSheet 理论上能够读取任何excel，后面针对excel的处理全部子类实现
+     * @param objectList
+     */
+    protected abstract void dealWith(List<Map<String,Object>> objectList);
 }
