@@ -2,6 +2,7 @@ package com.ysf.excel.service;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
+import com.ysf.excel.entity.SheetItem;
 import java.io.BufferedInputStream;
 import java.io.File;
 import java.io.FileInputStream;
@@ -43,6 +44,8 @@ public abstract class ExcelTools {
 
         Integer sheetIndex = workbook.getNumberOfSheets();
 
+        List<SheetItem> sheetItems = Lists.newArrayList();
+
         for (int i = 0; i < sheetIndex; i++) {
 
             Sheet sheet = workbook.getSheetAt(i);
@@ -52,6 +55,7 @@ public abstract class ExcelTools {
             //标题分开读
             Map<Integer,String> titleMap = readeFirstRow(firstRow);
 
+            SheetItem sheetItem = new SheetItem();
             List<Map<String,Object>> objectList = Lists.newArrayList();
 
             //excel具体内容
@@ -60,7 +64,10 @@ public abstract class ExcelTools {
                 Map<String,Object> rowObject = readOneRow(row,titleMap);
                 objectList.add(rowObject);
             }
+            sheetItem.setRowObjectList(objectList);
+            sheetItem.setSheetName(sheet.getSheetName());
 
+            dealWith(sheetItem);
             dealWith(objectList);
         }
     }
@@ -79,6 +86,12 @@ public abstract class ExcelTools {
 
     }
 
+    /**
+     * 读出来的结果 key 为titleMap里的tile，value是每一行对应title的值
+     * @param row
+     * @param titleMap
+     * @return
+     */
     private Map<String,Object> readOneRow(Row row,Map<Integer,String> titleMap){
         Map<String,Object> rowObject = Maps.newHashMap();
         Map<Integer,Object> rowObjectWithIndex = Maps.newHashMap();
@@ -136,4 +149,13 @@ public abstract class ExcelTools {
      * @param objectList
      */
     protected abstract void dealWith(List<Map<String,Object>> objectList);
+
+    /**
+     * 优化入参
+     * @param sheetItem
+     */
+    protected void dealWith(SheetItem sheetItem){
+        System.out.println("not implements");
+    }
+
 }

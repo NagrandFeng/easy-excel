@@ -10,7 +10,7 @@ import java.util.Map;
 
 /**
  * @author Yeshufeng
- * @title 读excel声称Java pojo，带上swagger的@ApiModelProperty
+ * @title 读excel生成Java pojo，带上swagger的@ApiModelProperty
  * @date 2018/12/7
  */
 public class TemplateEntityService extends ExcelTools {
@@ -36,6 +36,7 @@ public class TemplateEntityService extends ExcelTools {
 
 
         StringBuilder sb= new StringBuilder();
+        //生成java头
         entityList.forEach( entity ->{
             appendApiModel(sb,entity.getApiPropertyValue(),entity.getApiPropertyExample());
             appendFiled(sb,entity.getPermission(),entity.getFieldType(),entity.getFieldName());
