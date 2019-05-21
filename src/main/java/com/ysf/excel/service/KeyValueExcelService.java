@@ -13,9 +13,9 @@ import java.util.Map;
  */
 public class KeyValueExcelService extends ExcelTools {
 
-    private final String FEILD_NAME = "Field";
+    private final String FIELD_NAME = "Field";
     private final String PROPERTY_NAME = "Name";
-    private final String FEILD_TYPE = "String";
+    private final String FIELD_TYPE = "String";
     private final String DEFAULT_PACKAGE ="com.xx.entity.xx;";
 
     private JavaFileWriterService javaFileWriterService = new JavaFileWriterService();
@@ -32,12 +32,12 @@ public class KeyValueExcelService extends ExcelTools {
 
         ClassTemplate classTemplate = new ClassTemplate();
         classTemplate.setClassName(firstCharUpper(sheetItem.getSheetName()));
-        classTemplate.setPackageName("package"+DEFAULT_PACKAGE);
+        classTemplate.setPackageName("package "+DEFAULT_PACKAGE);
         rowObjects.forEach( item -> {
             VariableTemplate variableTemplate = new VariableTemplate();
             variableTemplate.setAnnotationValue(String.valueOf(item.get(PROPERTY_NAME)));
-            variableTemplate.setType(FEILD_TYPE);
-            variableTemplate.setVariable(String.valueOf(item.get(FEILD_NAME)));
+            variableTemplate.setType(FIELD_TYPE);
+            variableTemplate.setVariable(String.valueOf(item.get(FIELD_NAME)));
             classTemplate.addVariable(variableTemplate);
         });
 
