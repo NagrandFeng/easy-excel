@@ -44,8 +44,6 @@ public abstract class ExcelTools {
 
         Integer sheetIndex = workbook.getNumberOfSheets();
 
-        List<SheetItem> sheetItems = Lists.newArrayList();
-
         for (int i = 0; i < sheetIndex; i++) {
 
             Sheet sheet = workbook.getSheetAt(i);
@@ -100,12 +98,12 @@ public abstract class ExcelTools {
             Object cellValue = readOneCell(row.getCell(i));
             rowObjectWithIndex.put(i,cellValue);
         }
-        for (Map.Entry<Integer,String> entry : titleMap.entrySet()) {
-            Integer index = entry.getKey();
-            String fieldName = entry.getValue();
+
+        titleMap.forEach((index,fieldName) -> {
             Object fieldValue = rowObjectWithIndex.get(index);
             rowObject.put(fieldName,fieldValue);
-        }
+        });
+
         return rowObject;
     }
 
