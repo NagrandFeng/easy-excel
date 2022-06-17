@@ -12,7 +12,7 @@
         <springframework.version>4.3.2.RELEASE</springframework.version>
         <jdk.version>1.8</jdk.version>
         <guava.version>21.0</guava.version>
-        <fastjson.alibaba.version>1.2.32</fastjson.alibaba.version>
+        <fastjson.alibaba.version>1.2.83</fastjson.alibaba.version>
         <apache.poi.ooxmml.version>3.9</apache.poi.ooxmml.version>
     </properties>
 
